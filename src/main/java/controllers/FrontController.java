@@ -56,6 +56,7 @@ public class FrontController extends HttpServlet {
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | SecurityException
                 | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e) {
             //エラー処理を行うオブジェクトを作成
+            e.printStackTrace();
             action = new UnknownAction();
         }
 
