@@ -4,8 +4,11 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 
+import actions.view.EmployeeView;
 import constants.AttributeConst;
 import constants.ForwardConst;
+import constants.MessageConst;
+import constants.PropertyConst;
 import services.EmployeeService;
 
 public class AuthAction extends ActionBase {
@@ -37,4 +40,31 @@ public class AuthAction extends ActionBase {
         forward(ForwardConst.FW_LOGIN);
     }
 
+    public void login() throws ServletException, IOException {
+        String code = getRequestParam(AttributeConst.EMP_CODE);
+        String plainPass = getRequestParam(AttributeConst.EMP_PASS);
+        String pepper = getContextScope(PropertyConst.PEPPER);
+
+        Boolean isVaildEmployee = service.validateLogin(code, plainPass, pepper);
+
+        //ログイン成功
+        if (isVaildEmployee) {
+            //トークンも有効
+            if (checkToken()) {
+                EmployeeView ev = service.findOne(code, plainPass, pepper);
+                putSessionScope(AttributeConst.LOGIN_EMP, ev);
+                putSessionScope(AttributeConst.FLUSH, MessageConst.I_LOGINED.getMessage());
+                redirect(ForwardConst.ACT_TOP, ForwardConst.CMD_INDEX);
+            }
+        } else {
+            //CSRF対策用トークンを設定
+            putRequestScope(AttributeConst.TOKEN, getTokenId());
+            //認証失敗エラーメッセージ表示フラグをたてる
+            putRequestScope(AttributeConst.LOGIN_ERR, true);
+            //入力された従業員コードを設定
+            putRequestScope(AttributeConst.EMP_CODE, code);
+            //ログイン画面を表示
+            forward(ForwardConst.FW_LOGIN);
+        }
+    }
 }

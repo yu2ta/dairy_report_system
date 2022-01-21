@@ -16,6 +16,7 @@ public class TopAction extends ActionBase {
 
     public void index() throws ServletException, IOException {
         String flush = getSessionScope(AttributeConst.FLUSH);
+
         if (flush != null) {
             putRequestScope(AttributeConst.FLUSH, flush);
             removeSessionScope(AttributeConst.FLUSH);
