@@ -40,6 +40,7 @@ public class AuthAction extends ActionBase {
         forward(ForwardConst.FW_LOGIN);
     }
 
+    //ログイン処理
     public void login() throws ServletException, IOException {
         String code = getRequestParam(AttributeConst.EMP_CODE);
         String plainPass = getRequestParam(AttributeConst.EMP_PASS);
@@ -66,5 +67,15 @@ public class AuthAction extends ActionBase {
             //ログイン画面を表示
             forward(ForwardConst.FW_LOGIN);
         }
+    }
+
+    //ログアウト処理
+    public void logout() throws ServletException, IOException {
+        removeSessionScope(AttributeConst.LOGIN_EMP);
+
+        putSessionScope(AttributeConst.FLUSH, MessageConst.I_LOGOUT.getMessage());
+
+        redirect(ForwardConst.ACT_AUTH, ForwardConst.CMD_SHOW_LOGIN);
+
     }
 }
