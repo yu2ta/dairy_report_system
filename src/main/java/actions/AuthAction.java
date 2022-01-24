@@ -31,6 +31,7 @@ public class AuthAction extends ActionBase {
 
         //セッションにフラッシュメッセージが登録されている場合はリクエストスコープに設定する
         String flush = getSessionScope(AttributeConst.FLUSH);
+
         if (flush != null) {
             putRequestScope(AttributeConst.FLUSH, flush);
             removeSessionScope(AttributeConst.FLUSH);
