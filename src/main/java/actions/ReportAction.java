@@ -115,6 +115,49 @@ public class ReportAction extends ActionBase {
             putRequestScope(AttributeConst.REPORT, rv);
             forward(ForwardConst.FW_REP_SHOW);
         }
+    }
 
+    //編集画面の表示
+    public void edit() throws ServletException, IOException {
+        //idを条件に日報データを取得
+        ReportView rv = service.findOne(toNumber(getRequestParam(AttributeConst.REP_ID)));
+
+        EmployeeView ev = (EmployeeView) getSessionScope(AttributeConst.LOGIN_EMP);
+
+        //レポートが取得できないか、ログインしてる作業員が作成者ではない場合
+        if (rv == null || ev.getId() != rv.getEmployee().getId()) {
+            forward(ForwardConst.FW_ERR_UNKNOWN);
+        } else {
+            putRequestScope(AttributeConst.TOKEN, getTokenId());
+            putRequestScope(AttributeConst.REPORT, rv);
+
+            forward(ForwardConst.FW_REP_EDIT);
+        }
+    }
+
+    public void update() throws ServletException, IOException {
+        if (checkToken()) {
+            ReportView rv = service.findOne(toNumber(getRequestParam(AttributeConst.REP_ID)));
+
+            rv.setReportDate(toLocalDate(getRequestParam(AttributeConst.REP_DATE)));
+            rv.setTitle(getRequestParam(AttributeConst.REP_TITLE));
+            rv.setContent(getRequestParam(AttributeConst.REP_CONTENT));
+
+            //日報データの更新
+            List<String> errors = service.update(rv);
+
+            //エラー発生時
+            if (errors.size() > 0) {
+                putRequestScope(AttributeConst.TOKEN, getTokenId());
+                putRequestScope(AttributeConst.REPORT, rv);
+                putRequestScope(AttributeConst.ERR, errors);
+
+                forward(ForwardConst.FW_REP_EDIT);
+            } else {
+                //エラーがなければ
+                putSessionScope(AttributeConst.FLUSH, MessageConst.I_UPDATED.getMessage());
+                redirect(ForwardConst.ACT_REP, ForwardConst.CMD_INDEX);
+            }
+        }
     }
 }
