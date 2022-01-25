@@ -90,8 +90,9 @@ public class ReportAction extends ActionBase {
 
             //登録中にエラーがあった場合
             if (errors.size() > 0) {
+
+                putRequestScope(AttributeConst.REPORT, rv);
                 putRequestScope(AttributeConst.TOKEN, getTokenId());
-                putRequestScope(AttributeConst.REPORT, ev);
                 putRequestScope(AttributeConst.ERR, errors);
 
                 forward(ForwardConst.FW_REP_NEW);
