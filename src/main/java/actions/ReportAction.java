@@ -102,7 +102,19 @@ public class ReportAction extends ActionBase {
                 //リダイレクト
                 redirect(ForwardConst.ACT_REP, ForwardConst.CMD_INDEX);
             }
-
         }
+    }
+
+    //詳細画面の表示
+    public void show() throws ServletException, IOException {
+        ReportView rv = service.findOne(toNumber(getRequestParam(AttributeConst.REP_ID)));
+
+        if (rv == null) {
+            forward(ForwardConst.FW_ERR_UNKNOWN);
+        } else {
+            putRequestScope(AttributeConst.REPORT, rv);
+            forward(ForwardConst.FW_REP_SHOW);
+        }
+
     }
 }
